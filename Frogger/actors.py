@@ -12,6 +12,10 @@ import random
 import pygame
 from pygame.locals import *
 
+#Importamos Clases y Métodos del archivo frogger.py
+from frogger import *
+
+#Actores en el videojuego
 
 #Clase Rectángulo (forma de todos los objetos)
 class Rectangle:
@@ -51,3 +55,44 @@ class Lane(Rectangle):
 		for i in range(n):
 			self.obstacles.append(Obstacle(offset + spc * i, 
 				y * g_vars['grid'], l * g_vars['grid'], g_vars['grid'], spd, o_color))
+
+#Clase Frog (sapo que controla el jugador)
+class Frog(Rectangle):
+
+	def __init__(self, x, y, w):
+		super(Frog, self).__init__(x, y, w, w)
+		self.x0 = x
+		self.y0 = y
+		self.color = (34, 177, 76)
+		self.attached = None
+
+	def reset(self):
+		self.x = self.x0
+		self.y = self.y0
+		self.attach(None)
+
+	def move(self, xdir, ydir):
+		self.x += xdir * g_vars['grid']
+		self.y += ydir * g_vars['grid']
+
+	def attach(self, obstacle):	
+		self.attached = obstacle
+
+	def update(self):
+		if self.attached is not None:
+			self.x += self.attached.speed
+
+		if self.x + self.w > g_vars['width']:
+			self.x = g_vars['width'] - self.w
+		
+		if self.x < 0:
+			self.x = 0
+		if self.y + self.h > g_vars['width']:
+			self.y = g_vars['width'] - self.w
+		if self.y < 0:
+			self.y = 0
+
+	def draw(self):
+		rect = Rect( [self.x, self.y], [self.w, self.h] )
+		pygame.draw.rect( g_vars['window'], self.color, rect )
+
